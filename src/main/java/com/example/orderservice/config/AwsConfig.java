@@ -26,8 +26,8 @@ public class AwsConfig {
     private StaticCredentialsProvider credentialsProvider() {
         return StaticCredentialsProvider.create(
             AwsBasicCredentials.create(
-                getEnv("AWS_ACCESS_KEY"),
-                getEnv("AWS_SECRET_KEY")
+                getEnv("AWS_ACCESS_KEY_ID"),        
+                getEnv("AWS_SECRET_ACCESS_KEY")  
             )
         );
     }
