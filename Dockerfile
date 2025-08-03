@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y maven && mvn dependency:go-offline -B
 # Copy the source code
 COPY . .
 
+RUN mvn dependency:resolve
+
 # Package the application
 RUN mvn clean package -DskipTests
 
