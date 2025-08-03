@@ -1,19 +1,20 @@
 package com.example.orderservice.config;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.services.sns.SnsClient; 
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient; 
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.sns.SnsClient;
 
 import java.net.URI;
-
 
 @Configuration
 @ConfigurationProperties(prefix = "aws")
@@ -29,6 +30,17 @@ public class AwsConfig {
         private String secretKey;
     }
 
+    @PostConstruct
+    public void logAwsCredentials() {
+        System.out.println("✅ AWS Region: " + region);
+        if (credentials == null) {
+            System.out.println("❌ Credentials are NULL");
+        } else {
+            System.out.println("✅ AWS Access Key: " + credentials.getAccessKey());
+            System.out.println("✅ AWS Secret Key: " + (credentials.getSecretKey() != null ? "Provided" : "NULL"));
+        }
+    }
+
     private StaticCredentialsProvider credentialsProvider() {
         return StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(
@@ -42,7 +54,7 @@ public class AwsConfig {
     public S3Client s3Client() {
         return S3Client.builder()
                 .region(Region.of(region))
-                .endpointOverride(URI.create("https://s3.ap-south-1.amazonaws.com")) // regional endpoint
+                .endpointOverride(URI.create("https://s3.ap-south-1.amazonaws.com"))
                 .credentialsProvider(credentialsProvider())
                 .build();
     }
