@@ -1,69 +1,59 @@
 package com.example.orderservice.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;
 
 import java.net.URI;
 
 @Configuration
-@ConfigurationProperties(prefix = "aws")
-@Data
 public class AwsConfig {
 
-    private String region;
-    private Credentials credentials;
+    @Bean
+    public StaticCredentialsProvider credentialsProvider() {
+        String accessKey = System.getenv("AWS_ACCESS_KEY_ID");
+        String secretKey = System.getenv("AWS_SECRET_ACCESS_KEY");
 
-    @Data
-    public static class Credentials {
-        private String accessKey;
-        private String secretKey;
-    }
+        if (accessKey == null || secretKey == null) {
+            throw new RuntimeException("AWS credentials not set in environment variables");
+        }
 
-    private StaticCredentialsProvider credentialsProvider() {
-        return StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        credentials.getAccessKey(),
-                        credentials.getSecretKey()
-                )
-        );
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
+        return StaticCredentialsProvider.create(awsCreds);
     }
 
     @Bean
-    public S3Client s3Client() {
-        return S3Client.builder()
-                .region(Region.of(region))
-                .endpointOverride(URI.create("https://s3.ap-south-1.amazonaws.com")) // regional endpoint
-                .credentialsProvider(credentialsProvider())
-                .build();
-    }
-
-    @Bean
-    public SnsClient snsClient() {
+    public SnsClient snsClient(StaticCredentialsProvider credentialsProvider) {
         return SnsClient.builder()
-                .region(Region.of(region))
-                .credentialsProvider(credentialsProvider())
+                .region(Region.of(System.getenv().getOrDefault("AWS_REGION", "ap-south-1")))
+                .credentialsProvider(credentialsProvider)
                 .build();
     }
 
     @Bean
-    public DynamoDbClient dynamoDbClient() {
+    public S3Client s3Client(StaticCredentialsProvider credentialsProvider) {
+        return S3Client.builder()
+                .region(Region.of(System.getenv().getOrDefault("AWS_REGION", "ap-south-1")))
+                .credentialsProvider(credentialsProvider)
+                .build();
+    }
+
+    @Bean
+    public DynamoDbClient dynamoDbClient(StaticCredentialsProvider credentialsProvider) {
         return DynamoDbClient.builder()
-                .region(Region.of(region))
-                .credentialsProvider(credentialsProvider())
+                .region(Region.of(System.getenv().getOrDefault("AWS_REGION", "ap-south-1")))
+                .credentialsProvider(credentialsProvider)
                 .build();
     }
 
     @Bean
-    public DynamoDbEnhancedClient enhancedClient(DynamoDbClient dynamoDbClient) {
+    public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(dynamoDbClient)
                 .build();
