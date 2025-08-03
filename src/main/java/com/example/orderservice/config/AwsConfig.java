@@ -1,11 +1,7 @@
 package com.example.orderservice.config;
 
-import jakarta.annotation.PostConstruct;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -17,43 +13,32 @@ import software.amazon.awssdk.services.sns.SnsClient;
 import java.net.URI;
 
 @Configuration
-@ConfigurationProperties(prefix = "aws")
-@Data
 public class AwsConfig {
 
-    private String region;
-    private Credentials credentials;
-
-    @Data
-    public static class Credentials {
-        private String accessKey;
-        private String secretKey;
-    }
-
-    @PostConstruct
-    public void logAwsCredentials() {
-        System.out.println("✅ AWS Region: " + region);
-        if (credentials == null) {
-            System.out.println("❌ Credentials are NULL");
-        } else {
-            System.out.println("✅ AWS Access Key: " + credentials.getAccessKey());
-            System.out.println("✅ AWS Secret Key: " + (credentials.getSecretKey() != null ? "Provided" : "NULL"));
+    private String getEnv(String key, boolean required) {
+        String value = System.getenv(key);
+        if (required && (value == null || value.isEmpty())) {
+            throw new IllegalArgumentException("Missing required environment variable: " + key);
         }
+        return value;
     }
 
     private StaticCredentialsProvider credentialsProvider() {
+        String accessKey = getEnv("AWS_ACCESS_KEY", true);
+        String secretKey = getEnv("AWS_SECRET_KEY", true);
         return StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(
-                        credentials.getAccessKey(),
-                        credentials.getSecretKey()
-                )
+                AwsBasicCredentials.create(accessKey, secretKey)
         );
+    }
+
+    private Region getAwsRegion() {
+        return Region.of(getEnv("AWS_REGION", true));
     }
 
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.of(region))
+                .region(getAwsRegion())
                 .endpointOverride(URI.create("https://s3.ap-south-1.amazonaws.com"))
                 .credentialsProvider(credentialsProvider())
                 .build();
@@ -62,7 +47,7 @@ public class AwsConfig {
     @Bean
     public SnsClient snsClient() {
         return SnsClient.builder()
-                .region(Region.of(region))
+                .region(getAwsRegion())
                 .credentialsProvider(credentialsProvider())
                 .build();
     }
@@ -70,7 +55,7 @@ public class AwsConfig {
     @Bean
     public DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder()
-                .region(Region.of(region))
+                .region(getAwsRegion())
                 .credentialsProvider(credentialsProvider())
                 .build();
     }
