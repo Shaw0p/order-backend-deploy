@@ -10,7 +10,7 @@ public class SnsNotificationService {
 
     private final SnsClient snsClient;
 
-    @Value("${aws.sns.topic.arn}")
+    @Value("${SNS_TOPIC_ARN}")
     private String topicArn;
 
     public SnsNotificationService(SnsClient snsClient) {
