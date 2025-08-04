@@ -22,8 +22,9 @@ public class CorsConfig {
                         "https://order-management-frontend-99mb-k1kyo2d7d-shaw0ps-projects.vercel.app",
                         "https://order-management-frontend-99mb-gslr5wryr-shaw0ps-projects.vercel.app"
                     )
-                    .allowedMethods("GET", "POST", "PUT", "DELETE")
-                    .allowedHeaders("*");
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") 
+                    .allowedHeaders("*")
+                    .allowCredentials(true); 
             }
         };
     }
