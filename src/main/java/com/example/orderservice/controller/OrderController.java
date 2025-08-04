@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -63,5 +64,23 @@ public class OrderController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Upload failed: " + e.getMessage());
         }
+    }
+
+    
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> updateOrderStatus(@PathVariable UUID id, @RequestBody Map<String, String> payload) {
+        String newStatus = payload.get("status");
+        if (newStatus == null || newStatus.isBlank()) {
+            return ResponseEntity.badRequest().body("Status is required");
+        }
+
+        Order order = orderService.getOrder(id);
+        if (order == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        order.setStatus(newStatus);
+        orderService.updateOrder(id, order);
+        return ResponseEntity.ok("Order status updated to: " + newStatus);
     }
 }
