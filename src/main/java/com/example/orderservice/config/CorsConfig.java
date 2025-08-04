@@ -18,7 +18,8 @@ public class CorsConfig {
                         "https://order-management-frontend.vercel.app",
                         "https://order-management-frontend-99mb-ouww0jk0u-shaw0ps-projects.vercel.app",
                         "https://order-management-frontend-99mb-1oowgueao-shaw0ps-projects.vercel.app",
-                        "https://order-management-frontend-99mb-442fm1y8a-shaw0ps-projects.vercel.app"
+                        "https://order-management-frontend-99mb-442fm1y8a-shaw0ps-projects.vercel.app",
+                        "https://order-management-frontend-99mb-k1kyo2d7d-shaw0ps-projects.vercel.app"
                     )
                     .allowedMethods("GET", "POST", "PUT", "DELETE")
                     .allowedHeaders("*");
