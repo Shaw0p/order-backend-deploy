@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Allow all routes
-                        .allowedOrigins("https://order-management-frontend.vercel.app") // Allow frontend
+                        .allowedOrigins("https://order-management-frontend.vercel.app", "https://order-management-frontend-99mb-1oowgueao-shaw0ps-projects.vercel.app") // Allow frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE") // Allowed HTTP methods
                         .allowedHeaders("*"); // Allow all headers
             }
