@@ -16,12 +16,9 @@ public class CorsConfig {
                 registry.addMapping("/**")
                     .allowedOrigins(
                         "https://order-management-frontend.vercel.app",
-                        "https://order-management-frontend-99mb-ouww0jk0u-shaw0ps-projects.vercel.app",
-                        "https://order-management-frontend-99mb-1oowgueao-shaw0ps-projects.vercel.app",
-                        "https://order-management-frontend-99mb-442fm1y8a-shaw0ps-projects.vercel.app",
-                        "https://order-management-frontend-99mb-k1kyo2d7d-shaw0ps-projects.vercel.app",
                         "https://order-management-frontend-99mb-gslr5wryr-shaw0ps-projects.vercel.app",
-                        "https://order-management-frontend-99mb-m4ghoi67z-shaw0ps-projects.vercel.app"
+                        "https://order-management-frontend-99mb-m4ghoi67z-shaw0ps-projects.vercel.app",
+                        "https://order-management-frontend-99mb-4snwo3h69-shaw0ps-projects.vercel.app"
                     )
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") 
                     .allowedHeaders("*")
