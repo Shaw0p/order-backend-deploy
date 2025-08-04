@@ -7,16 +7,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
-    
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Allow all routes
-                        .allowedOrigins("https://order-management-frontend.vercel.app", "https://order-management-frontend-99mb-1oowgueao-shaw0ps-projects.vercel.app") // Allow frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Allowed HTTP methods
-                        .allowedHeaders("*"); // Allow all headers
+                registry.addMapping("/**")
+                    .allowedOrigins(
+                        "https://order-management-frontend.vercel.app",
+                        "https://order-management-frontend-99mb-ouww0jk0u-shaw0ps-projects.vercel.app",
+                        "https://order-management-frontend-99mb-1oowgueao-shaw0ps-projects.vercel.app",
+                        "https://order-management-frontend-99mb-442fm1y8a-shaw0ps-projects.vercel.app"
+                    )
+                    .allowedMethods("GET", "POST", "PUT", "DELETE")
+                    .allowedHeaders("*");
             }
         };
     }
